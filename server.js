@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import routes from './src/routes/routeManager.js';
+import routes from './src/routes/productRoutes.js';
 import connectDB from './src/config/databaseConnection.js';
 import globalErrorHandler from './src/utils/globalErrorHandler.js';
 import cluster from 'cluster';
@@ -64,7 +64,7 @@ app.get('/health', (req, res) => {
 // -------------------------------
 // API Routes
 // -------------------------------
-app.use( routes);
+app.use(routes);
 
 // -------------------------------
 // 404 - Route Not Found Handler
