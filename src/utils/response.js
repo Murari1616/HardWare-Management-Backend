@@ -32,4 +32,5 @@ const sendErrorResponse = (
   res.status(statusCode).json(response);
 };
 
-export { sendSuccessResponse, sendErrorResponse };
+module.exports = { sendSuccessResponse, sendErrorResponse };
+

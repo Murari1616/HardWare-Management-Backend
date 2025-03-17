@@ -1,4 +1,4 @@
-import AppError from './appError.js'
+const AppError=require('./appError')
 
 const sendErrorDev = (error, res) => {
     const statusCode = error.statusCode || 500;
@@ -34,7 +34,6 @@ const sendErrorProd = (error, res) => {
     });
 };
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler = (err, req, res, _next) => {
     console.error('globalErrorHandler error========>', err);
 
@@ -65,4 +64,4 @@ const globalErrorHandler = (err, req, res, _next) => {
     sendErrorProd(err, res);
 };
 
-export default globalErrorHandler;
+module.exports= globalErrorHandler;

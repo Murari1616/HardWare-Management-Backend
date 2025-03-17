@@ -2,10 +2,11 @@
   "name": "HardWare-Management-Backend",
   "version": "1.0.0",
   "main": "server.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon server.js",
     "dev": "node server.js"
+
   },
   "repository": "https://github.com/Murari1616/HardWare-Management-Backend.git",
   "author": "Murari1616 <murarikunchapu@gmail.com>",
@@ -22,8 +23,11 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-mongodb": "^1.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.9"
   }
 }

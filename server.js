@@ -1,15 +1,15 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import routes from './src/routes/productRoutes.js';
-import connectDB from './src/config/databaseConnection.js';
-import globalErrorHandler from './src/utils/globalErrorHandler.js';
-import cluster from 'cluster';
-import catchAsync from './src/utils/catchAsync.js'
-import AppError from './src/utils/appError.js';
-import os from 'os';
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const routes = require('./src/routes/routeManager.js');
+const connectDB = require('./src/config/databaseConnection.js');
+const globalErrorHandler = require('./src/utils/globalErrorHandler.js');
+const cluster = require('cluster');
+const catchAsync = require('./src/utils/catchAsync.js');
+const AppError = require('./src/utils/appError.js');
+const os = require('os');
 
 dotenv.config();
 
