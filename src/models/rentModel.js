@@ -7,6 +7,15 @@ const rentSchema = new mongoose.Schema(
       default: Date.now,
       required: true,
     },
+    inTime: {
+      type: String, 
+      required: true,
+    },
+    
+    outTime: {
+      type: String, 
+      default : null,
+    },    
     customerName: {
       type: String,
       required: true,
@@ -39,34 +48,34 @@ const rentSchema = new mongoose.Schema(
       ref: "Work",
     },
     rent: {
-      type: Number,
+      type: String,
       required: true,
     },
     advance: {
-      type: Number,
+      type: String,
       required: true,
     },
     address: {
       type: String,
       default: null,
     },
-    rentPaid: {
-      type: Number,
+    rentToBePaid: {
+      type: String,
       default: 0,
     },
     totalRentDays: {
       type: Number,
-      default: null,
-    },
-    totalAmount: {
-      type: Number,
-      default: null,
+      default: 1,
     },
     closingAmount: {
-      type: Number,
+      type: String,
       default: null,
     },
     referenceName: {
+      type: String,
+      default: null,
+    },
+    additionalInfo: {
       type: String,
       default: null,
     },

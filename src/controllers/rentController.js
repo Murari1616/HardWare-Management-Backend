@@ -25,10 +25,21 @@ const deleteRent = catchAsync(async (req, res) => {
     sendSuccessResponse(res, rents, 200, "Rent deleted successfully");
 });
 
-const getAllRents = catchAsync(async (_req, res) => {
-    const rents = await getAllRentsService();
+// const getAllRents = catchAsync(async (_req, res) => {
+//     const rents = await getAllRentsService();
+//     sendSuccessResponse(res, rents, 200, "Rents fetched successfully");
+// });
+
+const getAllRents = catchAsync(async (req, res) => {
+    const page = Number(req.query.page) || 1; // Default page to 1
+    const limit = Number(req.query.limit) || 10; // Default limit to 10
+    const search = req.query.search ? req.query.search.trim() : undefined;
+    const date = req.query.date ? req.query.date.trim() : undefined; // Separate date parameter
+
+    const rents = await getAllRentsService(page, limit, search, date);
     sendSuccessResponse(res, rents, 200, "Rents fetched successfully");
 });
+
 
 const getRentById = catchAsync(async (req, res) => {
     const rents = await getRentByIdService(req.params.id);

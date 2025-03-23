@@ -2,15 +2,15 @@ const { updateRent, createRent, deleteRent, getAllRents, getRentById, getRentByN
 const AppError = require('../utils/appError');
 
 const createRentService = async (rentData) => {
-    const { rentName } = rentData;
-    const rentExist = await getRentByName(rentName);
-    if (rentExist) {
-        throw new AppError("Rent already exists", 404);
-    }
+    // const rentExist = await getRentByName(rentName);
+    // if (rentExist) {
+    //     throw new AppError("Rent already exists", 404);
+    // }
     return await createRent(rentData);
 };
 
 const updateRentService = async (id, rentData) => {
+    console.log("ID",id)
     const updatedrent = await updateRent(id, rentData);
     if (!updatedrent) {
         throw new AppError("Failed to update rent", 400);
@@ -23,9 +23,15 @@ const deleteRentService = async (id) => {
     return getAllRents();
 };
 
-const getAllRentsService = async () => {
-    return await getAllRents();
+// const getAllRentsService = async () => {
+//     return await getAllRents();
+// };
+
+const getAllRentsService = async (page, limit, search, date) => {
+    return await getAllRents(page, limit, search, date);
 };
+
+
 
 const getRentByIdService = async (id) => {
     const rentData = await getRentById(id);
