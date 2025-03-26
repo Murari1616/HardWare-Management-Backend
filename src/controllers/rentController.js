@@ -35,8 +35,9 @@ const getAllRents = catchAsync(async (req, res) => {
     const limit = Number(req.query.limit) || 10; // Default limit to 10
     const search = req.query.search ? req.query.search.trim() : undefined;
     const date = req.query.date ? req.query.date.trim() : undefined; // Separate date parameter
+    const days = req.query.days ? Number(req.query.days) : undefined; // Separate date parameter
 
-    const rents = await getAllRentsService(page, limit, search, date);
+    const rents = await getAllRentsService(page, limit, search, date,days);
     sendSuccessResponse(res, rents, 200, "Rents fetched successfully");
 });
 

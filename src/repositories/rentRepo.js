@@ -28,18 +28,15 @@ const updateRent = async (id, rentData) => {
 };
 
 const deleteRent = async (id) => {
-    const rent = await Rent.findByIdAndUpdate(
-        id,
-        { $set: { isDeleted: true, status: "inactive" } },
-        { new: true }
-    );
+    const rent = await Rent.findByIdAndDelete(id);
 
     if (!rent) {
-        throw new AppError("rent not found", 404);
+        throw new AppError("Rent not found", 404);
     }
 
-    return rent;
+    return { message: "Rent deleted successfully" };
 };
+
 
 // const getAllRents = async () => {
 //     const rents = await Rent.find().sort({ updatedAt: -1 });
@@ -62,10 +59,11 @@ const deleteRent = async (id) => {
 // };
 
 
-const getAllRents = async (page, limit, search, date) => {
+const getAllRents = async (page, limit, search, date,days) => {
     const offset = (page - 1) * limit;
     const query = {};
 
+    const todayIST = new Date().toLocaleDateString("en-CA");
     // Search by customerName or referenceName (case-insensitive)
     if (search) {
         query.$or = [
@@ -79,13 +77,30 @@ const getAllRents = async (page, limit, search, date) => {
         query.date = date; // Assuming date is stored as 'YYYY-MM-DD'
     }
 
-    // Fetch rents with pagination and sorting
+    if (days) {
+        let [year, month, day] = todayIST.split("-").map(Number);
+        day -= days - 1;
+        while (day < 1) {
+            month -= 1;
+            if (month < 1) {
+                month = 12;
+                year -= 1;
+            }
+            day += new Date(year, month, 0).getDate();
+        }
+        const targetDateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        query.$or = query.$or || [];
+        query.$or.push(
+            { returnDate: null, date: { $lte: targetDateString } }, 
+            { date: targetDateString }, 
+            { date: todayIST }
+        );
+    }
     const rents = await Rent.find(query)
         .sort({ createdAt: -1 }) // Sort by createdAt (latest first)
         .skip(offset)
         .limit(limit);
 
-    // Fetch productName and typeName for each rent record
     const rentsWithDetails = await Promise.all(
         rents.map(async (rent) => {
             const product = await Product.findById(rent.productId).select('productName');

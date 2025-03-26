@@ -20,15 +20,14 @@ const updateRentService = async (id, rentData) => {
 
 const deleteRentService = async (id) => {
     await deleteRent(id);
-    return getAllRents();
 };
 
 // const getAllRentsService = async () => {
 //     return await getAllRents();
 // };
 
-const getAllRentsService = async (page, limit, search, date) => {
-    return await getAllRents(page, limit, search, date);
+const getAllRentsService = async (page, limit, search, date,days) => {
+    return await getAllRents(page, limit, search, date,days);
 };
 
 
