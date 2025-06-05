@@ -28,9 +28,9 @@ const connectDB = async () => {
       autoIndex: false, 
       socketTimeoutMS: 45000, 
       connectTimeoutMS: 30000,
-      ssl: NODE_ENV === "production", // Enable SSL in production
-      tls: NODE_ENV === "production", // Enable TLS in production
-      tlsAllowInvalidCertificates: NODE_ENV !== "production", // Allow invalid certs in non-production
+      // ssl: NODE_ENV === "production", 
+      // tls: NODE_ENV === "production", 
+      // tlsAllowInvalidCertificates: NODE_ENV !== "production", 
     };
 
     // Connect to MongoDB
