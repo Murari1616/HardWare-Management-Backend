@@ -34,6 +34,8 @@ const getProductById = catchAsync(async (req, res) => {
     sendSuccessResponse(res, product, 200, "Product fetched successfully");    
 });
 
+
+
 module.exports = {
     createProduct,
     updateProduct,

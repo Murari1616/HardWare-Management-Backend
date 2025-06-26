@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const http =require('http');
 const routes = require('./src/routes/routeManager.js');
 const connectDB = require('./src/config/databaseConnection.js');
 const globalErrorHandler = require('./src/utils/globalErrorHandler.js');
@@ -10,6 +11,8 @@ const cluster = require('cluster');
 const catchAsync = require('./src/utils/catchAsync.js');
 const AppError = require('./src/utils/appError.js');
 const os = require('os');
+const { initSocket } = require('./src/utils/socketSetup.js');
+const PushSubscription=require('./src/models/subscriptionModel.js')
 
 dotenv.config();
 
@@ -61,6 +64,26 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'UP' });
 });
 
+app.post('/subscribe', async (req, res) => {
+  const { userId, subscription } = req.body;
+
+  if (!userId || !subscription) {
+    return res.status(400).json({ message: "Missing userId or subscription" });
+  }
+
+  // Check if already exists
+  const existing = await PushSubscription.findOne({ userId });
+
+  if (existing) {
+    existing.subscription = subscription;
+    await existing.save();
+  } else {
+    await PushSubscription.create({ userId, subscription });
+  }
+
+  res.status(201).json({ success: true, message: "Subscription saved" });
+});
+
 // -------------------------------
 // API Routes
 // -------------------------------
@@ -88,7 +111,9 @@ app.use(globalErrorHandler);
 const startServer = async (port) => {
   try {
     await connectDB();  // Ensure DB connection before starting server
-    app.listen(port, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+    server.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
   } catch (err) {

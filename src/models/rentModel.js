@@ -103,6 +103,10 @@ const rentSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    approved:{
+      type:Boolean,
+      default:false
+    }
   },
   {
     timestamps: true, 

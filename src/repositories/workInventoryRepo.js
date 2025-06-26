@@ -1,4 +1,6 @@
 const Work = require('../models/inventoryWorkModel');
+const Type = require('../models/inventoryTypeModel');
+const Product = require('../models/inventoryProductModel');
 const AppError = require('../utils/appError');
 const mongoose = require('mongoose');
 
@@ -44,11 +46,23 @@ const getAllWorks = async () => {
 };
 
 const getWorkById = async (id) => {
-    const work = await Work.findById(id);
-    if (!work) {
-        throw new AppError("work not found", 400);
-    }
-    return work;
+  const work = await Work.findById(id);
+  if (!work) {
+    throw new AppError("Work not found", 400);
+  }
+
+  // Fetch related product and type
+  const [product, type] = await Promise.all([
+    Product.findById(work.productId).select("productName"),
+    Type.findById(work.typeId).select("typeName")
+  ]);
+
+  // Merge the names into the response
+  return {
+    ...work.toObject(),
+    productName: product?.productName || "Unknown Product",
+    typeName: type?.typeName || "Unknown Type"
+  };
 };
 
 const getWorkByProductId = async (productId) => {
