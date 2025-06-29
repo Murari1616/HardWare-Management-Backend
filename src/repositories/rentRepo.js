@@ -59,7 +59,7 @@ const deleteRent = async (id) => {
 // };
 
 
-const getAllRents = async (page, limit, search, date,days) => {
+const getAllRents = async (page, limit, search, date, days) => {
     const offset = (page - 1) * limit;
     const query = {};
 
@@ -91,8 +91,8 @@ const getAllRents = async (page, limit, search, date,days) => {
         const targetDateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         query.$or = query.$or || [];
         query.$or.push(
-            { returnDate: null, date: { $lte: targetDateString } }, 
-            { date: targetDateString }, 
+            { returnDate: null, date: { $lte: targetDateString } },
+            { date: targetDateString },
             { date: todayIST }
         );
     }
@@ -130,6 +130,14 @@ const getAllRents = async (page, limit, search, date,days) => {
 
 
 
+const getAllUnApprovedRentsRepo = async () => {
+    const rents = await Rent.find({ approved: false });
+    if (!rents || rents.length === 0) {
+        throw new AppError("Unapproved rents not found", 400);
+    }
+    return rents;
+};
+
 const getRentById = async (id) => {
     const rent = await Rent.findById(id);
     if (!rent) {
@@ -139,9 +147,27 @@ const getRentById = async (id) => {
 };
 
 const getRentByName = async (name) => {
-    const rent = await Rent.findOne({ rentName: name });
-    return rent;
+    const rents = await Rent.find({ customerName: name, approved: true });
+
+    const rentsWithDetails = await Promise.all(
+        rents.map(async (rent) => {
+            const product = await Product.findById(rent.productId).select('productName');
+            const type = await Type.findById(rent.typeId).select('typeName');
+
+            return {
+                ...rent.toObject(),
+                productName: product ? product.productName : "Unknown Product",
+                typeName: type ? type.typeName : "Unknown Type"
+            };
+        })
+    );
+    if (!rents) {
+        throw new AppError("no rents found", 400);
+    }
+    return rentsWithDetails;
 };
+
+
 
 module.exports = {
     createRent,
@@ -150,4 +176,5 @@ module.exports = {
     getAllRents,
     getRentById,
     getRentByName,
+    getAllUnApprovedRentsRepo
 };

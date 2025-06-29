@@ -1,4 +1,4 @@
-const { updateRent, createRent, deleteRent, getAllRents, getRentById, getRentByName,getAllRentsByProductAndTypeId } = require('../repositories/rentRepo');
+const { updateRent, createRent, deleteRent, getAllRents, getRentById, getRentByName, getAllRentsByProductAndTypeId, getAllUnApprovedRentsRepo } = require('../repositories/rentRepo');
 const AppError = require('../utils/appError');
 
 const createRentService = async (rentData) => {
@@ -10,7 +10,6 @@ const createRentService = async (rentData) => {
 };
 
 const updateRentService = async (id, rentData) => {
-    console.log("ID",id)
     const updatedrent = await updateRent(id, rentData);
     if (!updatedrent) {
         throw new AppError("Failed to update rent", 400);
@@ -26,11 +25,16 @@ const deleteRentService = async (id) => {
 //     return await getAllRents();
 // };
 
-const getAllRentsService = async (page, limit, search, date,days) => {
-    return await getAllRents(page, limit, search, date,days);
+const getAllRentsService = async (page, limit, search, date, days) => {
+    return await getAllRents(page, limit, search, date, days);
+};
+const getAllUnApprovedRentsService = async () => {
+    return await getAllUnApprovedRentsRepo();
 };
 
-
+const getAllRentsByNameService = async (name) => {
+    return await getRentByName(name);
+};
 
 const getRentByIdService = async (id) => {
     const rentData = await getRentById(id);
@@ -46,4 +50,6 @@ module.exports = {
     deleteRentService,
     getAllRentsService,
     getRentByIdService,
+    getAllUnApprovedRentsService,
+    getAllRentsByNameService
 };

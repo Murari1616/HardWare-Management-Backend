@@ -4,6 +4,8 @@ const {
     getAllRentsService,
     getRentByIdService,
     updateRentService,
+    getAllRentsByNameService,
+    getAllUnApprovedRentsService,
 } = require('../services/rentService');
 const PushSubscription = require("../models/subscriptionModel");
 const dotenv = require('dotenv');
@@ -57,6 +59,7 @@ const createRent = catchAsync(async (req, res) => {
 
 const updateRent = catchAsync(async (req, res) => {
     const rents = await updateRentService(req.params.id, req.body);
+    console.log("REQBAODY",req.body)
     sendSuccessResponse(res, rents, 200, "Rent updated successfully");
 });
 
@@ -81,6 +84,16 @@ const getAllRents = catchAsync(async (req, res) => {
     sendSuccessResponse(res, rents, 200, "Rents fetched successfully");
 });
 
+const getAllUnApprovedRents=catchAsync(async (req,res)=>{
+    const rents=await getAllUnApprovedRentsService();
+    sendSuccessResponse(res,rents,200,'Unapproved rents fetched successfully');
+})
+const getAllRentsByName=catchAsync(async (req,res)=>{
+    const name=req.query.name;
+    const rents=await getAllRentsByNameService(name);
+    sendSuccessResponse(res,rents,200,'Unapproved rents fetched successfully');
+})
+
 
 const getRentById = catchAsync(async (req, res) => {
     const rents = await getRentByIdService(req.params.id);
@@ -94,4 +107,6 @@ module.exports = {
     deleteRent,
     getAllRents,
     getRentById,
+    getAllRentsByName,
+    getAllUnApprovedRents
 };
