@@ -24,7 +24,7 @@ const createRent = catchAsync(async (req, res) => {
     const io = getIO();
     const ownerId = process.env.ownerId;
     const ownerSocketId = getUserSocketId(ownerId);
-    if (ownerSocketId && req.user.id!=ownerId) {
+    if (ownerSocketId) {
         io.to(ownerId).emit("newRentNotification", {
             message: `A new rent order has been booked.`,
             rentId: rents._id,
@@ -36,7 +36,7 @@ const createRent = catchAsync(async (req, res) => {
     }
 
     const subscriptionDoc = await PushSubscription.findOne({ userId: ownerId });
-    if (subscriptionDoc?.subscription && req.user.id==ownerId ) {
+    if (subscriptionDoc?.subscription ) {
         const payload = JSON.stringify({
             title: "New Rent Booked!",
             body: `${rents.customerName} has booked your item.`,
