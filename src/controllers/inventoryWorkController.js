@@ -7,21 +7,36 @@ const {
     getWorkByProductIdService,
     getAllWorksByProductAndTypeIdService
 } = require('../services/workInventoryService');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccessResponse } = require('../utils/response');
 
 const createWork = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const works = await createWorkService(req.body);
     sendSuccessResponse(res, works, 201, "Work created successfully");
 });
 
 const updateWork = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const works = await updateWorkService(req.params.id, req.body);
     sendSuccessResponse(res, works, 200, "Work updated successfully");
 });
 
 const deleteWork = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const works = await deleteWorkService(req.params.id);
     sendSuccessResponse(res, works, 200, "Work deleted successfully");
 });

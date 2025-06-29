@@ -16,6 +16,7 @@ const catchAsync = require('../utils/catchAsync');
 const { sendSuccessResponse } = require('../utils/response');
 const { getIO, getUserSocketId } = require('../utils/socketSetup');
 const { sendPushNotification } = require('../utils/webPush');
+const AppError = require('../utils/appError');
 
 const createRent = catchAsync(async (req, res) => {
     const rents = await createRentService(req.body);
@@ -23,8 +24,7 @@ const createRent = catchAsync(async (req, res) => {
     const io = getIO();
     const ownerId = process.env.ownerId;
     const ownerSocketId = getUserSocketId(ownerId);
-
-    if (ownerSocketId) {
+    if (ownerSocketId && req.user.id!=ownerId) {
         io.to(ownerId).emit("newRentNotification", {
             message: `A new rent order has been booked.`,
             rentId: rents._id,
@@ -36,7 +36,7 @@ const createRent = catchAsync(async (req, res) => {
     }
 
     const subscriptionDoc = await PushSubscription.findOne({ userId: ownerId });
-    if (subscriptionDoc?.subscription) {
+    if (subscriptionDoc?.subscription && req.user.id==ownerId ) {
         const payload = JSON.stringify({
             title: "New Rent Booked!",
             body: `${rents.customerName} has booked your item.`,
@@ -58,8 +58,11 @@ const createRent = catchAsync(async (req, res) => {
 });
 
 const updateRent = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const rents = await updateRentService(req.params.id, req.body);
-    console.log("REQBAODY",req.body)
     sendSuccessResponse(res, rents, 200, "Rent updated successfully");
 });
 
@@ -74,6 +77,10 @@ const deleteRent = catchAsync(async (req, res) => {
 // });
 
 const getAllRents = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const page = Number(req.query.page) || 1; // Default page to 1
     const limit = Number(req.query.limit) || 10; // Default limit to 10
     const search = req.query.search ? req.query.search.trim() : undefined;
@@ -84,14 +91,18 @@ const getAllRents = catchAsync(async (req, res) => {
     sendSuccessResponse(res, rents, 200, "Rents fetched successfully");
 });
 
-const getAllUnApprovedRents=catchAsync(async (req,res)=>{
-    const rents=await getAllUnApprovedRentsService();
-    sendSuccessResponse(res,rents,200,'Unapproved rents fetched successfully');
+const getAllUnApprovedRents = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
+    const rents = await getAllUnApprovedRentsService();
+    sendSuccessResponse(res, rents, 200, 'Unapproved rents fetched successfully');
 })
-const getAllRentsByName=catchAsync(async (req,res)=>{
-    const name=req.query.name;
-    const rents=await getAllRentsByNameService(name);
-    sendSuccessResponse(res,rents,200,'Unapproved rents fetched successfully');
+const getAllRentsByName = catchAsync(async (req, res) => {
+    const name = req.query.name;
+    const rents = await getAllRentsByNameService(name);
+    sendSuccessResponse(res, rents, 200, 'Unapproved rents fetched successfully');
 })
 
 

@@ -5,21 +5,36 @@ const {
     getProductByIdService, 
     updateProductService 
 } = require('../services/productInventoryService');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccessResponse } = require('../utils/response');
 
 const createProduct = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+        if (req.user.id != owner) {
+            throw new AppError("Unauthorised", 401);
+        }
     const products = await createProductService(req.body);
     sendSuccessResponse(res, products, 201, "Product created successfully");
 });
 
 const updateProduct = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const products = await updateProductService(req.params.id, req.body);
     sendSuccessResponse(res, products, 200, "Product updated successfully");
 });
 
 const deleteProduct = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const products = await deleteProductService(req.params.id);
     sendSuccessResponse(res, products, 200, "Product deleted successfully");
 });

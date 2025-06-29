@@ -1,6 +1,8 @@
 const {
-  login,createUser,getUser,getAllUsers
-} =require('../services/userService');
+  login, createUser, getUser, getAllUsers
+} = require('../services/userService');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccessResponse } = require('../utils/response');
@@ -16,7 +18,11 @@ const loginUser = catchAsync(async (req, res) => {
   sendSuccessResponse(res, user, 200, 'Login successful');
 });
 
-const getAllUsersController = catchAsync(async (_req, res) => {
+const getAllUsersController = catchAsync(async (req, res) => {
+  const owner = process.env.ownerId;
+  if (req.user.id != owner) {
+    throw new AppError("Unauthorised", 401);
+  }
   const users = await getAllUsers();
   sendSuccessResponse(res, users, 200, 'Users fetched successfully');
 });

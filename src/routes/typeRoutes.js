@@ -1,13 +1,14 @@
 const express = require('express');
 const { createType, deleteType, getAllTypes, getTypeById, updateType,getAllTypesByProductId } = require('../controllers/inventoryTypeController');
+const { authenticate } = require('../middleware/authentication');
 
 const router = express.Router(); 
 
-router.post('/createType',createType);
-router.put('/updateType/:id',updateType);
-router.get('/getTypeById/:id',getTypeById);
-router.get('/getAllTypesByProductId/:productId',getAllTypesByProductId);
-router.delete('/deleteType/:id',deleteType);
-router.get('/getAllTypes',getAllTypes);
+router.post('/createType',authenticate,createType);
+router.put('/updateType/:id',authenticate,updateType);
+router.get('/getTypeById/:id',authenticate,getTypeById);
+router.get('/getAllTypesByProductId/:productId',authenticate,getAllTypesByProductId);
+router.delete('/deleteType/:id',authenticate,deleteType);
+router.get('/getAllTypes',authenticate,getAllTypes);
 
 module.exports=router;

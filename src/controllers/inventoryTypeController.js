@@ -6,21 +6,36 @@ const {
     updateTypeService ,
     getAllTypesByProductIdService
 } = require('../services/typeInventoryService');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const catchAsync = require('../utils/catchAsync');
 const { sendSuccessResponse } = require('../utils/response');
 
 const createType = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const types = await createTypeService(req.body);
     sendSuccessResponse(res, types, 201, "Type created successfully");
 });
 
 const updateType = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const types = await updateTypeService(req.params.id, req.body);
     sendSuccessResponse(res, types, 200, "Type updated successfully");
 });
 
 const deleteType = catchAsync(async (req, res) => {
+    const owner = process.env.ownerId;
+    if (req.user.id != owner) {
+        throw new AppError("Unauthorised", 401);
+    }
     const types = await deleteTypeService(req.params.id);
     sendSuccessResponse(res, types, 200, "Type deleted successfully");
 });

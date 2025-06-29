@@ -43,7 +43,7 @@ const authenticate = async (req, res, next) => {
       return next(new AppError("User not found", 404));
     }
 
-    req.user = { ...user, decoded };
+    req.user = decoded;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
