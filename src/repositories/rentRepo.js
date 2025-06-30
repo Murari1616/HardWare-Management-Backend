@@ -1,5 +1,6 @@
 const Rent = require('../models/rentModel');
 const Product = require('../models/inventoryProductModel');
+const Work = require('../models/inventoryWorkModel');
 const Type = require('../models/inventoryTypeModel');
 const AppError = require('../utils/appError');
 const mongoose = require('mongoose');
@@ -132,10 +133,24 @@ const getAllRents = async (page, limit, search, date, days) => {
 
 const getAllUnApprovedRentsRepo = async () => {
     const rents = await Rent.find({ approved: false });
+    const rentsWithDetails = await Promise.all(
+        rents.map(async (rent) => {
+            const product = await Product.findById(rent.productId).select('productName');
+            const type = await Type.findById(rent.typeId).select('typeName');
+            const work=await Work.findById(rent.workId).select('workName');
+
+            return {
+                ...rent.toObject(),
+                productName: product ? product.productName : "Unknown Product",
+                typeName: type ? type.typeName : "Unknown Type",
+                workName: work ? work.workName : "Unknown Work"
+            };
+        })
+    );
     if (!rents || rents.length === 0) {
         throw new AppError("Unapproved rents not found", 400);
     }
-    return rents;
+    return rentsWithDetails;
 };
 
 const getRentById = async (id) => {
